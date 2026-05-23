@@ -60,7 +60,6 @@ function LoginPage({ addUser, login }){
         <div className="bg-background font-body-md text-on-background min-h-screen flex flex-col">
             <main className="flex-grow flex items-center justify-center px-margin-mobile md:px-margin-desktop py-stack-xl">
                 <div className="w-full max-w-5xl flex flex-col md:flex-row bg-surface-container-lowest rounded-xl overflow-hidden shadow-2xl border border-surface-container">
-                    {/* Left Branding Section */}
                     <div className="hidden md:flex md:w-1/2 relative bg-primary p-stack-xl flex-col justify-between overflow-hidden">
                         <div className="z-0">
                         <span className="text-2xl font-black text-primary-fixed italic tracking-tight">Hire me</span>

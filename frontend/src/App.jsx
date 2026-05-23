@@ -214,7 +214,7 @@ function App() {
         <Route path="/login" element={<LoginPage addUser={addUser} login={login} />} />
         <Route path="/jobs" element={<JobListings jobs={jobs} />} />
         <Route path="/creations" element={<Creations jobs={jobs} currentUser={currentUser} />} />
-        <Route path="/myprofile/:userid" element={<MyProfile users={users} logout={logout} loggeduser={currentUser} updateSelection={updateSelection} />} />
+        <Route path="/myprofile/:userid" element={<MyProfile users={users} logout={logout} loggeduser={currentUser} updateSelection={updateSelection} jobs={jobs}/>} />
         <Route path="/jobdetails/:jobID" element={<JobProfile jobs={jobs} currentUser={currentUser} applytojob={applytojob} hasApplied={hasApplied} sethasApplied={sethasApplied} />} />
         <Route path="/detailsEntry" element={<DetailsEntry addUser={addUser} />} />
         <Route path="/jobcreator" element={<JobCreator addJob={addJob} />} />
