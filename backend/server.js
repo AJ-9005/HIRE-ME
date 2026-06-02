@@ -10,12 +10,11 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// --- 1. MONGODB CONNECTION ---
 mongoose.connect(process.env.ATLAS_URI)
     .then(() => console.log("✅ Connected to MongoDB Atlas"))
     .catch(err => console.error("❌ MongoDB Connection Error:", err));
 
-// --- 2. SCHEMAS & MODELS ---
+
 const UserSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
@@ -23,7 +22,7 @@ const UserSchema = new mongoose.Schema({
     contactno: { type: String, required: true },
     email: { type: String, required: true },
     role: String,
-    id: Number, // Keeping your local Date.now() ID for frontend compatibility
+    id: Number,
     details: mongoose.Schema.Types.Mixed,
     selected: { type: Object, default: {} }
 });
@@ -46,7 +45,6 @@ const JobSchema = new mongoose.Schema({
 const User = mongoose.model('User', UserSchema);
 const Job = mongoose.model('Job', JobSchema);
 
-// --- 3. MULTER SETUP (FOR FILES) ---
 const resumesDir = path.join(__dirname, 'resumes');
 if (!fs.existsSync(resumesDir)) fs.mkdirSync(resumesDir);
 
@@ -58,9 +56,6 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// --- 4. API ROUTES ---
-
-// Get all data (React app initialization)
 app.get('/api/data', async (req, res) => {
     try {
         const usersList = await User.find({});
@@ -76,7 +71,6 @@ app.get('/api/data', async (req, res) => {
     }
 });
 
-// Signup Route
 app.post('/api/signup', upload.single('resume'), async (req, res) => {
     try {
         if (!req.body.userData) return res.status(400).json({ message: "No data received" });
@@ -98,7 +92,6 @@ app.post('/api/signup', upload.single('resume'), async (req, res) => {
     }
 });
 
-// Update Selection (Shortlist/Reject)
 app.post('/api/update-selection', async (req, res) => {
     const { username, selected } = req.body;
     try {
@@ -114,7 +107,6 @@ app.post('/api/update-selection', async (req, res) => {
     }
 });
 
-// Add Job Route
 app.post('/api/add-job', async (req, res) => {
     try {
         const newJob = new Job(req.body);
@@ -126,7 +118,6 @@ app.post('/api/add-job', async (req, res) => {
     }
 });
 
-// Apply to Job Route
 app.post('/api/apply', async (req, res) => {
     const { jobId, currentUser } = req.body;
     try {
