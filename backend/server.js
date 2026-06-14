@@ -60,8 +60,6 @@ app.get('/api/data', async (req, res) => {
     try {
         const usersList = await User.find({});
         const jobsList = await Job.find({});
-        
-        // Convert array to the object format your React app expects for users
         const usersObj = {};
         usersList.forEach(u => { usersObj[u.username] = u; });
         
@@ -121,7 +119,6 @@ app.post('/api/add-job', async (req, res) => {
 app.post('/api/apply', async (req, res) => {
     const { jobId, currentUser } = req.body;
     try {
-        // Find job by your custom ID field
         const job = await Job.findOne({ id: jobId });
         if (!job) return res.status(404).json({ message: "Job not found" });
 

@@ -227,7 +227,3 @@ function App() {
 }
 
 export default App;
-
-//Remaining:
-//Filter Sidebar
-//A better dashboard/ui
