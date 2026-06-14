@@ -27,7 +27,7 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/data');
+        const response = await fetch('/_/backend/api/data');
         const data = await response.json();
         setUsers(data.users || {});
         setjobs(data.jobs || []);
@@ -48,7 +48,7 @@ function App() {
     }
     formdata.append('userData', JSON.stringify(finalUser))
     try {
-      const response = await fetch('http://localhost:5000/api/signup', {
+      const response = await fetch('/_/backend/api/signup', {
         method: 'POST',
         body: formdata,
       });
@@ -95,7 +95,7 @@ function App() {
     };
 
     try {
-      const response = await fetch('http://localhost:5000/api/add-job', {
+      const response = await fetch('/_/backend/api/add-job', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(jobwithUser)
@@ -112,7 +112,7 @@ function App() {
 
   const applytojob = async (jobID, user) => {
     try {
-      const response = await fetch('http://localhost:5000/api/apply', {
+      const response = await fetch('/_/backend/api/apply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ jobId: jobID, currentUser: user })
@@ -136,7 +136,7 @@ function App() {
 
   const updateSelection = async (username, newSelected) => {
     try {
-      const response = await fetch('http://localhost:5000/api/update-selection', {
+      const response = await fetch('/_/backend/api/update-selection', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, selected: newSelected })
@@ -160,7 +160,7 @@ function App() {
       if(resumeFile){
         formData.append("resume", resumeFile)
       }
-      const response = await fetch(`http://localhost:5000/api/edit-user/${updatedUser.username}`, {
+      const response = await fetch(`/_/backend/api/edit-user/${updatedUser.username}`, {
         method: 'PUT',
         body: formData,
       })
@@ -183,7 +183,7 @@ function App() {
 
   async function handleJobEdit(jobBody){
     try{
-      const response = await fetch(`http://localhost:5000/api/edit-job/${jobBody.id}`, 
+      const response = await fetch(`/_/backend/api/edit-job/${jobBody.id}`, 
         {
           method: 'PUT',
           headers: {'Content-Type': 'application/json'},
