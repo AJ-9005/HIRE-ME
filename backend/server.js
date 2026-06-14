@@ -175,5 +175,7 @@ app.put('/api/edit-job/:id', async (req, res) => {
     }
 })
 
-const PORT = 5000;
-app.listen(PORT, () => console.log(`🚀 MongoDB Server running at http://localhost:${PORT}`));
+module.exports = app
+
+// const PORT = 5000;
+// app.listen(PORT, () => console.log(`🚀 MongoDB Server running at http://localhost:${PORT}`));
