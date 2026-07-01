@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'
-function EditProfile({ currentUser }){
-    const [updatedUser, setUpdatedUser] = useState({...currentUser})
+import { useNavigate, useLocation } from 'react-router-dom'
+function EditProfile(){
+    const location = useLocation()
+    const [updatedUser, setUpdatedUser] = useState(location.state?.editUser)
     const navigate = useNavigate()
     function handleChange(e){
         const {name, value} = e.target;

@@ -1,6 +1,34 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-function JobListings({ jobs }){
+import { useEffect, useState } from "react"
+import { useFetcher, useNavigate } from "react-router-dom"
+import { API_URL } from "./config/api"
+function JobListings(){
+    const [jobs, setJobs] = useState([])
+    const [page, setPage] = useState(1)
+    async function fetchJobs(page, filters, append = true){
+        try{
+            const response = await fetch(`${API_URL}/api/getJobs?`,{
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({page: page, filters: filters})
+            })
+            const data = await response.json()
+            if(response.ok){
+                if(append){
+                    setJobs(prev => [...prev, ...data.jobs])
+                }
+                else{
+                    setJobs(data.jobs)
+                }
+            }
+            else{
+                console.log(`Error: ${ data.message }`)
+            }
+        }
+        catch(err){
+            console.error(err)
+        }
+    }
+    useEffect(() => {fetchJobs(page, filters)}, [page])
     const [filters, setFilters] = useState({
         search: "",
         minSalary: 0,
@@ -9,23 +37,11 @@ function JobListings({ jobs }){
         filterSkills: []
     })
     const [skillInput, setSkillInput] = useState("")
-    const [ search, setsearch ] = useState("")
     const navigate = useNavigate()
     function filterChange(e){
         const {name, value} = e.target
         setFilters(prev => ({...prev, [name]: value}))
     }
-    const filteredJobs = jobs.filter(job => {
-        const matchesSearch = job.jobrole.toLowerCase().includes(search.toLowerCase()) ||
-        job.company.toLowerCase().includes(search.toLowerCase()) ||
-        job.location.toLowerCase().includes(search.toLowerCase()) ||
-        job.description.toLowerCase().includes(search.toLowerCase())
-
-        const matchesSalary = Number(job.salary) >= Number(filters.minSalary)
-        const matchesEdu = filters.education == "All" || job.education == filters.education
-        const matchesSkills = filters.filterSkills.length == 0 || filters.filterSkills.some(s => job.skills.includes(s))
-        return matchesSearch && matchesSalary && matchesEdu && matchesSkills
-    })
     function setskills(e){
         if(e.key == ","){
             e.preventDefault()
@@ -41,6 +57,7 @@ function JobListings({ jobs }){
         const updatedSkills = filters.filterSkills.filter((_, index) => index != removalIndex)
         setFilters((prev) => ({...prev, filterSkills: updatedSkills}))
     }
+    function applyfilters(){}
     return(
         <div className="bg-background text-on-surface">
             <h1 className="heading pt-5">Job Listings</h1>
@@ -54,10 +71,10 @@ function JobListings({ jobs }){
                         <div className="space-y-stack-sm mb-stack-md">
                             <p className="font-label-md text-label-md text-on-surface uppercase tracking-wider">Salary Range</p>
                             <div className="space-y-3">
-                                <input type="range" min="5000" max="100000" value={filters.minSalary} step="5000" name="minSalary" className="w-full accent-primary h-2 bg-surface-container rounded-lg appearance-none cursor-pointer" placeholder="0" onChange={filterChange}/>
+                                <input type="range" min="5000" max="100000" value={filters?.minSalary} step="5000" name="minSalary" className="w-full accent-primary h-2 bg-surface-container rounded-lg appearance-none cursor-pointer" placeholder="0" onChange={filterChange}/>
                                 <div className="flex justify-between text-label-sm text-on-surface-variant">
                                     <span>Rs. 1000</span>
-                                    <span>{filters.minSalary}</span>
+                                    <span>{filters?.minSalary}</span>
                                     <span>Rs. 1,00,000+</span>
                                 </div>
                             </div>
@@ -78,7 +95,7 @@ function JobListings({ jobs }){
                                 <input type="text" placeholder="Type a skill and press comma" value={skillInput} onKeyDown={(e) => setskills(e)} onChange={(e) => setSkillInput(e.target.value)} className="filter-input"/>    
                                 </div>
                                 <div className="tag-container">
-                                    {filters.filterSkills.map((s, i) => (
+                                    {filters?.filterSkills.map((s, i) => (
                                         <div className="tag" key={i}>
                                             {s}
                                             <span onClick={() => removeSkill(i)}>&times;</span>
@@ -87,18 +104,20 @@ function JobListings({ jobs }){
                                 </div>
                             </div>
                         </div>
+                        <button className="btn-apply" onClick={() => fetchJobs(1, filters, false)}>Apply filters</button>
                     </div>
                 </aside>
                 <section className="col-span-9 space-y-stack-md">
                     <div className="bg-surface-container-lowest p-4 rounded-full shadow-md flex items-center gap-4 border border-outline-variant/50">
                         <div className="flex-1 flex items-center gap-3 pl-4 border-r border-outline-variant">
                             <span className="material-symbols-outlined text-secondary">search</span>
-                            <input className="w-full bg-transparent border-none focus:ring-0 text-body-md placeholder:text-outline" type="text" name="search" placeholder="Search here" onChange={(e) => setsearch(e.target.value)}/>
+                            <input className="w-full bg-transparent border-none focus:ring-0 text-body-md placeholder:text-outline" type="text" name="search" placeholder="Search here" onChange={filterChange}/>
+                            <button className="btn-apply w-1/4" onClick={() => fetchJobs(1, filters, false)}>Search</button>
                         </div>
                     </div>
                     <div className="space-y-stack-sm">
-                        {filteredJobs && filteredJobs.length>0?filteredJobs.map((job) => (
-                        <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-xl p-stack-md hover:shadow-lg transition-all duration-300 group cursor-pointer" onClick={() => navigate(`/jobdetails/${job.id}`)}>
+                        {jobs && jobs.length>0?jobs.map((job) => (
+                        <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-xl p-stack-md hover:shadow-lg transition-all duration-300 group cursor-pointer" onClick={() => navigate(`/jobdetails/${job._id}`)}>
                             <div className="flex gap-stack-md">
                                 <div className="flex-1">
                                     <div className="flex justify-between items-start">
@@ -118,6 +137,9 @@ function JobListings({ jobs }){
                         )): (
                         <p>No jobs posted yet.</p>
                         )}
+                    </div>
+                    <div className="flex w-full justify-center">
+                        <button className="btn" onClick={() => setPage(prev => prev+1)}> + Load More</button>
                     </div>
                 </section>
             </main>

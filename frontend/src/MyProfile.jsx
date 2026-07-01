@@ -1,40 +1,72 @@
+import { useEffect, useState } from "react"
 import { useLocation, useParams } from "react-router-dom"
 import { useNavigate } from "react-router-dom"
+import { API_URL } from "./config/api"
 function MyProfile({ users, logout, loggeduser, updateSelection, jobs }){
+    const { id } = useParams()
     const navigate = useNavigate()
-    const { userid } = useParams()
     const location = useLocation()
     const jobid = location.state?.viewingjobid
-    const currentUser = Object.values(users).find(user => user.id == userid)
-    let yourjobs = []
-    if(currentUser?.role == "Employer"){
-        yourjobs = jobs.filter(job => job.postedby == currentUser?.username)
-    }
-    else{
-        yourjobs = jobs.filter(job => job.applicants.some(applicant => applicant?.id == currentUser?.id))
-    }
+    const [owner, setOwner] = useState(false)
+    const [currentUser, setCurrentUser] = useState(null)
+    const[yourjobs, setyourjobs] = useState([])
+    const[status, setStatus] = useState(0)
+    useEffect(() => {
+        async function fetchUser(){
+            try{
+                const response = await fetch(`${API_URL}/myprofile?profileID=${id}`, {
+                    method: 'GET',
+                    credentials: "include"
+                })
+                const data = await response.json()
+                if(response.ok){
+                    const user = data.user
+                    setCurrentUser(user)
+                    setyourjobs(data.jobs)
+                    setOwner(data.owner)
+                    if (jobid){
+                        setStatus(user.selected[jobid])
+                    }
+                }
+                else{
+                    console.log(data.message)
+                }
+            }
+            catch(err){
+                console.error(err)
+            }
+        }
+        fetchUser();
+    }, [id])
     async function handleDecision(status){
         if(!jobid){
             alert("No job found")
             return
         }
-        const newSelected = {...currentUser?.selected, [jobid]: status}
         try {
-            const response = await fetch('http://localhost:5000/api/update-selection', {
+            const response = await fetch(`${API_URL}/update-selection`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: "include",
                 body: JSON.stringify({ 
-                    username: currentUser.username, 
-                    selected: newSelected 
+                    applicantID: currentUser._id, 
+                    status: status,
+                    jobid: jobid
                 })
             });
-
-            if (response.ok) {
-                updateSelection(currentUser.username, newSelected);
-                alert(status ? "Shortlisted!" : "Removed.");
+            const data = await response.json()
+            if (response.ok || response.status == 404) {
+                alert(data.message)
+                setCurrentUser((prev) => ({...prev, selected: {...prev.selected, [jobid]: status}}))
+            }
+            else{
+                alert("Some problem occured!")
+                setStatus(0)
             }
         } catch (err) {
             alert("Server is down! Decision not saved.");
+            console.log(err)
+            setStatus(0)
         }
         }
     return(
@@ -52,8 +84,8 @@ function MyProfile({ users, logout, loggeduser, updateSelection, jobs }){
                                             <h1 className="font-display-lg text-display-lg text-primary">{currentUser?.urname}</h1>
                                         </div>
                                         <div className="flex items-center gap-stack-sm">
-                                            {currentUser?.username == loggeduser?.username && (<>
-                                                <button className="bg-primary text-on-primary px-stack-md py-stack-xs rounded-lg font-label-md hover:opacity-90 transition-all flex items-center justify-center gap-stack-xs" onClick={() => navigate("/editprofile")}>
+                                            {owner && (<>
+                                                <button className="bg-primary text-on-primary px-stack-md py-stack-xs rounded-lg font-label-md hover:opacity-90 transition-all flex items-center justify-center gap-stack-xs" onClick={() => navigate("/editprofile", {state: {editUser: currentUser}})}>
                                                     <span className="material-symbols-outlined text-[18px]">edit</span>
                                                     Edit Profile
                                                 </button>
@@ -93,7 +125,7 @@ function MyProfile({ users, logout, loggeduser, updateSelection, jobs }){
                                 </div>
                             </div>
                         </section>
-                        {currentUser?.username == loggeduser?.username && (
+                        {owner && (
                             <section className="space-y-stack-md">
                                 <div className="flex items-center justify-between">
                                     <h2 className="font-headline-md text-headline-md text-primary">My Jobs</h2>
@@ -119,9 +151,9 @@ function MyProfile({ users, logout, loggeduser, updateSelection, jobs }){
                                                                 </div>
                                                             </div>
                                                         </td>
-                                                        <td class="px-stack-md py-stack-md font-body-sm text-body-sm text-on-surface-variant">{job?.id ? new Date(job.id).toLocaleDateString('en-GB') : "N/A"}</td>
+                                                        <td class="px-stack-md py-stack-md font-body-sm text-body-sm text-on-surface-variant">{job?.postedOn ? job.postedOn : "N/A"}</td>
                                                         <td className="px-stack-md py-stack-md text-right">
-                                                            <button className="px-stack-md py-stack-xs rounded-lg border border-secondary text-secondary font-label-md hover:bg-secondary hover:text-white transition-all active:scale-95" onClick={() => navigate(`/jobdetails/${job.id}`)}>
+                                                            <button className="px-stack-md py-stack-xs rounded-lg border border-secondary text-secondary font-label-md hover:bg-secondary hover:text-white transition-all active:scale-95" onClick={() => navigate(`/jobdetails/${job._id}`)}>
                                                                 View Details
                                                             </button>
                                                         </td>
@@ -161,8 +193,8 @@ function MyProfile({ users, logout, loggeduser, updateSelection, jobs }){
                                                 <span className="material-symbols-outlined text-[18px]">Description</span>
                                                 View Resume
                                             </button>
-                                            {currentUser?.username == loggeduser?.username && (<>
-                                                <button className="bg-primary text-on-primary px-stack-md py-stack-xs rounded-lg font-label-md hover:opacity-90 transition-all flex items-center justify-center gap-stack-xs" onClick={() => navigate("/editprofile")}>
+                                            {owner && (<>
+                                                <button className="bg-primary text-on-primary px-stack-md py-stack-xs rounded-lg font-label-md hover:opacity-90 transition-all flex items-center justify-center gap-stack-xs" onClick={() => navigate("/editprofile", {state: {editUser: currentUser}})}>
                                                     <span className="material-symbols-outlined text-[18px]">edit</span>
                                                     Edit Profile
                                                 </button>
@@ -188,15 +220,15 @@ function MyProfile({ users, logout, loggeduser, updateSelection, jobs }){
                                         </div>
                                         <div className="space-y-stack-xs">
                                             <p className="text-label-sm text-on-surface-variant uppercase tracking-wider">Marital Status</p>
-                                            <p className="font-body-md text-on-surface font-medium">{currentUser?.details.maritalstatus}</p>
+                                            <p className="font-body-md text-on-surface font-medium">{currentUser?.details?.maritalstatus}</p>
                                         </div>
                                         <div className="space-y-stack-xs">
                                             <p className="text-label-sm text-on-surface-variant uppercase tracking-wider">Highest Education</p>
-                                            <p className="font-body-md text-on-surface font-medium">{currentUser?.details.qualification}</p>
+                                            <p className="font-body-md text-on-surface font-medium">{currentUser?.details?.qualification}</p>
                                         </div>
                                         <div className="space-y-stack-xs">
                                             <p className="text-label-sm text-on-surface-variant uppercase tracking-wider">Work Expereince</p>
-                                            <p className="font-body-md text-on-surface font-medium">{currentUser?.details.expereince}</p>
+                                            <p className="font-body-md text-on-surface font-medium">{currentUser?.details?.expereince}</p>
                                         </div>
                                     </div>
                                     <div className="space-y-stack-sm pt-unit">
@@ -210,13 +242,13 @@ function MyProfile({ users, logout, loggeduser, updateSelection, jobs }){
                                 </div>
                             </div>
                         </section>
-                        {loggeduser?.role == "Employer" && loggeduser?.id != userid &&(
+                        {loggeduser?.role == "Employer" && !owner &&(
                             <div className="decision">
-                                <button className={`btn-apply ${currentUser?.selected?.[jobid] === true ? "btn-apply-disabled" : ""}`} onClick={() => handleDecision(true)} disabled={currentUser?.selected?.[jobid] === true}>Approve</button>
-                                <button className={`btn-apply ${currentUser?.selected?.[jobid] === false ? "btn-apply-disabled" : ""}`} onClick={() => handleDecision(false)} disabled={currentUser?.selected?.[jobid] === false}>Reject</button>
+                                <button className={`btn-apply ${currentUser?.selected?.[jobid] === 2 ? "btn-apply-disabled" : ""}`} onClick={() => {setStatus(2); handleDecision(2)}} disabled={currentUser?.selected?.[jobid] === 2}>Approve</button>
+                                <button className={`btn-apply ${currentUser?.selected?.[jobid] === 3 ? "btn-apply-disabled" : ""}`} onClick={() => {setStatus(3); handleDecision(3)}} disabled={currentUser?.selected?.[jobid] === 3}>Reject</button>
                             </div>
                         )}
-                        {currentUser?.username == loggeduser?.username && (
+                        {owner && (
                             <section className="space-y-stack-md">
                                 <div className="flex items-center justify-between">
                                     <h2 className="font-headline-md text-headline-md text-primary">My Applications</h2>
@@ -228,15 +260,15 @@ function MyProfile({ users, logout, loggeduser, updateSelection, jobs }){
                                     </div>
                                     <div className="bg-surface-container-low p-stack-md rounded-xl text-center space-y-unit border-l-4 border-[#00ff00]">
                                         <p className="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Accepted</p>
-                                        <p className="font-headline-sm text-headline-sm text-primary">{Object?.entries(currentUser?.selected || {}).filter(([jobid, status]) => status == true).length}</p>
+                                        <p className="font-headline-sm text-headline-sm text-primary">{Object?.entries(currentUser?.selected || {}).filter(([jobid, status]) => status == 2).length}</p>
                                     </div>
                                     <div className="bg-surface-container-low p-stack-md rounded-xl text-center space-y-unit border-l-4 border-[#ffff00]">
                                         <p className="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Pending</p>
-                                        <p className="font-headline-sm text-headline-sm text-primary">{Object?.entries(currentUser?.selected || {}).filter(([jobid, status]) => status == "pending").length}</p>
+                                        <p className="font-headline-sm text-headline-sm text-primary">{Object?.entries(currentUser?.selected || {}).filter(([jobid, status]) => status == 1).length}</p>
                                     </div>
                                     <div className="bg-surface-container-low p-stack-md rounded-xl text-center space-y-unit border-l-4 border-[red]">
                                         <p className="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Rejected</p>
-                                        <p className="font-headline-sm text-headline-sm text-primary">{Object?.entries(currentUser?.selected || {}).filter(([jobid, status]) => status == false).length}</p>
+                                        <p className="font-headline-sm text-headline-sm text-primary">{Object?.entries(currentUser?.selected || {}).filter(([jobid, status]) => status == 3).length}</p>
                                     </div>
                                 </div>
                                 <div className="table-div">
@@ -262,12 +294,12 @@ function MyProfile({ users, logout, loggeduser, updateSelection, jobs }){
                                                         </div>
                                                     </td>
                                                     <td className="px-stack-md py-stack-md">
-                                                        {currentUser?.selected?.[job.id] == true ? (<span className="inline-flex items-center px-stack-sm py-1 rounded-full text-label-sm font-label-sm bg-[lime]/60 text-[green]">Accepted</span>)
-                                                        : currentUser?.selected[job.id] == false? (<span className="inline-flex items-center px-stack-sm py-1 rounded-full text-label-sm font-label-sm bg-error-container text-on-error-container">Rejected</span>)
+                                                        {currentUser?.selected?.[job._id] == 2 ? (<span className="inline-flex items-center px-stack-sm py-1 rounded-full text-label-sm font-label-sm bg-[lime]/60 text-[green]">Accepted</span>)
+                                                        : currentUser?.selected?.[job._id] == 3? (<span className="inline-flex items-center px-stack-sm py-1 rounded-full text-label-sm font-label-sm bg-error-container text-on-error-container">Rejected</span>)
                                                         : (<span className="inline-flex items-center px-stack-sm py-1 rounded-full text-label-sm font-label-sm bg-secondary-container text-on-secondary-container">Pending</span>)}
                                                     </td>
                                                     <td className="px-stack-md py-stack-md text-right">
-                                                        <button className="px-stack-md py-stack-xs rounded-lg border border-secondary text-secondary font-label-md hover:bg-secondary hover:text-white transition-all active:scale-95" onClick={() => navigate(`/jobdetails/${job.id}`)}>
+                                                        <button className="px-stack-md py-stack-xs rounded-lg border border-secondary text-secondary font-label-md hover:bg-secondary hover:text-white transition-all active:scale-95" onClick={() => navigate(`/jobdetails/${job._id}`)}>
                                                             View Details
                                                         </button>
                                                     </td>

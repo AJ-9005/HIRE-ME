@@ -5,7 +5,6 @@ function EditJob({ handleJobEdit }){
     const [job, setJob] = useState(location.state?.job)
     const [skillinp, setskillinp] = useState("")
     const [allskills, setallskills] = useState(location.state?.job?.skills || [])
-    console.log(job)
     function handleChange(e){
         const {name, value} = e.target
         setJob((prev) => ({...prev, [name]: value}))

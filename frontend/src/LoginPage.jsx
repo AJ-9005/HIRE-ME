@@ -23,8 +23,6 @@ function LoginPage({ addUser, login }){
     }
     const handleRegister = (e) => {
         e.preventDefault()
-        console.log(passconfirm)
-        console.log(formdata.password)
         if(formdata.contactno.length != 10){
             alert("Please enter a valid phone no!")
             return

@@ -7,7 +7,7 @@ function JobCreator({ addJob }){
     const [allskills, setallskills] = useState([])
     const [jobdetails, setjobdetails] = useState({
         jobrole:"",
-        salary:"",
+        salary:null,
         location:"",
         jobtype: "",
         education: "",

@@ -5,7 +5,6 @@ function DetailsEntry({ addUser }){
     const location = useLocation()
     const navigate = useNavigate()
     const basicInfo = location.state?.basicInfo
-    console.log(basicInfo)
     const [skillinp, setskillinp] = useState("")
     const [allskills, setallskills] = useState([])
     const [companyDetails, setCompanyDetails] = useState({

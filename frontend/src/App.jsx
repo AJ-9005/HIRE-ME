@@ -13,6 +13,8 @@ import JobCreator from './JobCreator'
 import EditProfile from './EditProfile'
 import EditDetails from './EditDetails'
 import EditJob from './EditJob'
+import { API_URL } from './config/api'
+import ForYouPage from './ForYouPage'
 
 function App() {
   const navigate = useNavigate()
@@ -24,31 +26,32 @@ function App() {
   const [jobs, setjobs] = useState([])
 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('/_/backend/api/data');
-        const data = await response.json();
-        setUsers(data.users || {});
-        setjobs(data.jobs || []);
-      } catch (err) {
-        console.error("Failed to load database. Is the server running?", err);
-      }
-    };
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch(`${API_URL}/api/getJobs?page=1`);
+  //       const data = await response.json();
+  //       setUsers(data.users || {});
+  //       setjobs(data.jobs || []);
+  //     } catch (err) {
+  //       console.error("Failed to load database. Is the server running?", err);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
 
   const addUser = async (userObject, resumefile) => {
     const finalUser = (userObject.role === "Candidate")
-      ? { ...userObject, id: Date.now(), selected: {} }
-      : { ...userObject, id: Date.now() };
+      ? { ...userObject, selected: {} }
+      : { ...userObject };
     const formdata = new FormData()
     if(resumefile){
       formdata.append('resume', resumefile)
     }
     formdata.append('userData', JSON.stringify(finalUser))
     try {
-      const response = await fetch('/_/backend/api/signup', {
+      const response = await fetch(`${API_URL}/api/signup`, {
+        credentials: 'include',
         method: 'POST',
         body: formdata,
       });
@@ -67,38 +70,65 @@ function App() {
     }
   };
 
-  function login(username, password) {
-    const usertologin = users[username];
-    if (usertologin && usertologin.password === password) {
-      setCurrentUser(usertologin);
-      setLogIn(true);
-      navigate(`/myprofile/${usertologin.id}`);
-    } else {
-      alert("Invalid username or password");
+  async function login(username, password) {
+    const userObject = { 
+      username: username,
+      password: password
+    }
+    try{
+      const response = await fetch(`${API_URL}/api/login`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userObject)
+      })
+      const data = await response.json()
+      if(response.ok){
+        setCurrentUser(data.user);
+        setLogIn(true)
+        navigate(`/myprofile/${data.user.id}`);
+      }
+      else if(response.status == 401){
+        alert(data.message)
+        navigate("/login")
+      }
+      else{
+        const err = await response.json();
+        alert(err.message);
+        return;
+      }
+    }
+    catch(err){
+      console.error(err)
     }
   }
 
-  function logout() {
-    setLogIn(false);
-    setCurrentUser(null);
-    navigate("/");
-    alert("Logged out successfully!");
+  async function logout() {
+    const response = await fetch(`${API_URL}/logout`, {
+      method: 'POST',
+      credentials: 'include'
+    })
+    if(response.ok){
+      setLogIn(false);
+      setCurrentUser(null);
+      navigate("/");
+      const data = await response.json()
+      alert(data.message);
+    }
   }
 
   const addJob = async (newJob) => {
     const jobwithUser = {
       ...newJob,
-      postedby: currentUser.username,
-      company: currentUser.details.companyname, 
-      id: Date.now(), 
       applicants: [],
     };
 
     try {
-      const response = await fetch('/_/backend/api/add-job', {
+      const response = await fetch(`${API_URL}/api/add-job`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(jobwithUser)
+        body: JSON.stringify(jobwithUser),
+        credentials: "include"
       });
       if (response.ok) {
         setjobs((prev) => [...prev, jobwithUser]);
@@ -109,50 +139,6 @@ function App() {
     }
   };
 
-
-  const applytojob = async (jobID, user) => {
-    try {
-      const response = await fetch('/_/backend/api/apply', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jobId: jobID, currentUser: user })
-      });
-
-      if (response.ok) {
-        setjobs((prev) =>
-          prev.map((job) =>
-            job.id == jobID ? { ...job, applicants: [...job.applicants, user] } : job
-          )
-        );
-        setCurrentUser(prev => ({
-        ...prev,
-        selected: { ...prev.selected, [jobID]: "pending" }
-        }));
-      }
-    } catch (err) {
-      console.error("Application error:", err);
-    }
-  };
-
-  const updateSelection = async (username, newSelected) => {
-    try {
-      const response = await fetch('/_/backend/api/update-selection', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, selected: newSelected })
-      });
-
-      if (response.ok) {
-        setUsers((prev) => ({
-          ...prev,
-          [username]: { ...prev[username], selected: newSelected }
-        }));
-      }
-    } catch (err) {
-      console.error("Selection update error:", err);
-    }
-  };
-
   async function handleUserEdit(updatedUser, resumeFile){
     try{
       const formData = new FormData()
@@ -160,16 +146,15 @@ function App() {
       if(resumeFile){
         formData.append("resume", resumeFile)
       }
-      const response = await fetch(`/_/backend/api/edit-user/${updatedUser.username}`, {
+      const response = await fetch(`${API_URL}/api/edit-user`, {
         method: 'PUT',
         body: formData,
+        credentials: "include"
       })
       if(response.ok){
         const data = await response.json()
-        setCurrentUser(data.user)
-        setUsers({...users, [updatedUser.username]: updatedUser})
         alert("Profile Updated Succesfully!")
-        navigate(`/myprofile/${updatedUser.id}`)
+        navigate(`/myprofile/${currentUser.id}`)
       }
       else{
         const error = await response.json()
@@ -177,23 +162,23 @@ function App() {
       }
     }
     catch(err){
-      console.error("Edit Erro: ", err)
+      console.error("Edit Error: ", err)
     }
   }
 
   async function handleJobEdit(jobBody){
     try{
-      const response = await fetch(`/_/backend/api/edit-job/${jobBody.id}`, 
+      const response = await fetch(`${API_URL}/api/edit-job?jobid=${jobBody._id}`, 
         {
           method: 'PUT',
           headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(jobBody)
+          body: JSON.stringify(jobBody),
+          credentials: "include"
     })
       if(response.ok){
         const data = await response.json()
-        setjobs((prev) => prev.map((job) => (job.id == jobBody.id? data.updatedJob: job)))
-      alert("Job details updated succesfully!")
-      navigate(`/jobdetails/${jobBody.id}`) 
+        alert("Job details updated succesfully!")
+        navigate(`/jobdetails/${jobBody._id}`) 
       }
       else{
         const err = await response.json()
@@ -210,17 +195,17 @@ function App() {
     <>
       <Navbar isLoggedIn={isLoggedIn} currentUser={currentUser} />
       <Routes>
-        <Route path="/" element={<Landing isLoggedIn={isLoggedIn} />} />
+        <Route path="/" element={<Landing isLoggedIn={isLoggedIn} currentUser={currentUser} />} />
         <Route path="/login" element={<LoginPage addUser={addUser} login={login} />} />
-        <Route path="/jobs" element={<JobListings jobs={jobs} />} />
-        <Route path="/creations" element={<Creations jobs={jobs} currentUser={currentUser} />} />
-        <Route path="/myprofile/:userid" element={<MyProfile users={users} logout={logout} loggeduser={currentUser} updateSelection={updateSelection} jobs={jobs}/>} />
-        <Route path="/jobdetails/:jobID" element={<JobProfile jobs={jobs} currentUser={currentUser} applytojob={applytojob} hasApplied={hasApplied} sethasApplied={sethasApplied} />} />
+        <Route path="/jobs" element={<JobListings />} />
+        <Route path="/myprofile/:id" element={<MyProfile users={users} logout={logout} loggeduser={currentUser} jobs={jobs}/>} />
+        <Route path="/jobdetails/:jobID" element={<JobProfile jobs={jobs} currentUser={currentUser} />} />
         <Route path="/detailsEntry" element={<DetailsEntry addUser={addUser} />} />
         <Route path="/jobcreator" element={<JobCreator addJob={addJob} />} />
         <Route path="/editprofile" element={< EditProfile currentUser={currentUser} />} />
-        <Route path="/editdetails" element={< EditDetails handleEdit={handleUserEdit} />} />
+        <Route path="/editdetails" element={< EditDetails handleUserEdit={handleUserEdit} />} />
         <Route path="/editjob" element={<EditJob handleJobEdit={handleJobEdit}/>} />
+        <Route path="/foryoupage" element={<ForYouPage/>} />
       </Routes>
     </>
   );

@@ -1,22 +1,69 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
+import { API_URL } from "./config/api"
 function JobProfile({ jobs, currentUser, applytojob }){
     const { jobID } = useParams()
     const navigate = useNavigate()
-    const job = jobs?.find(j => j.id == jobID)
-    const [view, setview] = useState(false)
-    const isOwner = currentUser?.username == job?.postedby
-    const status = currentUser?.selected?.[jobID]
-    const statusText = status == true ? "Approved":status == false? "Rejected": "Pending"
-    const [hasApplied, sethasApplied] = useState(status?status:false)
-    function handleApply(){
-        if(!currentUser){
-            alert("Please login to apply!")
-            navigate("/login")
+    const [job, setJob] = useState(null)
+    const [isOwner, setOwner] = useState(false)
+    const [status, setStatus] = useState(0)
+    useEffect(() => {
+        async function fetchDetails(jobID){
+            try{
+                const response = await fetch(`${API_URL}/getJobProfile?id=${jobID}`, {
+                    method: 'GET',
+                    credentials: "include"
+                })
+                const data = await response.json()
+                if(response.ok){
+                    setJob(data.job)
+                    setOwner(data.owner)
+                    setStatus(data.status)
+                }
+                else if(response.status == 401){
+                    alert("Please log in to continue!")
+                    navigate("/login")
+                }
+                else{
+                    alert("Server down!")
+                    console.log(data.message)
+                }
+                }
+            catch(err){
+                alert("Error fetching job profile!")
+                console.log(err)
+            }
         }
-        applytojob(job.id, currentUser)
-        sethasApplied(true)
-        alert("Applied succesfully!")
+        fetchDetails(jobID)
+    }, [jobID, status])
+    const [view, setview] = useState(false)
+    const statusText = status == 2 ? "Approved":status == 3? "Rejected": "Pending"
+    async function handleApply(){
+        try{
+            const response = await fetch(`${API_URL}/applytojob`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({jobid: jobID}),
+                credentials: "include"
+            })
+            const data = await response.json()
+            if(response.ok){
+                alert(data.message)
+                setStatus(data.status)
+            }
+            else if(response.status == 401){
+                alert(data.message)
+                navigate("/login")
+            }
+            else{
+                alert("Some error occured!")
+                console.log(data.message)
+            }
+        }
+        catch(err){
+            alert("Some error occured!")
+            console.log(err)
+        }
     }
     return(
         <div className="text-on-surface selection:bg-secondary-fixed selection:text-on-secondary-fixed">
@@ -97,9 +144,9 @@ function JobProfile({ jobs, currentUser, applytojob }){
                             <div className="bg-surface-container-high rounded-lg p-stack-md executive-shadow border border-outline-variant/30">
                                 <div className="flex flex-col gap-3">
                                     {currentUser?.role == "Candidate" &&(<>
-                                        <button className={`btn-apply ${hasApplied ? "btn-apply-disabled" : ""}`} onClick={handleApply} disabled={hasApplied}>{hasApplied ? "Applied":"Apply Now!"}</button>
-                                    {hasApplied &&(
-                                        <span className="text-center font-body-sm text-on-surface mt-2 block">Status: <span className={`font-semibold ${status === true ? "text-green-600" : status === false ? "text-red-600" : "text-amber-500"}`}>{statusText}</span></span>
+                                        <button className={`btn-apply ${status != 0 ? "btn-apply-disabled" : ""}`} onClick={handleApply} disabled={status != 0}>{status != 0 ? "Applied":"Apply Now!"}</button>
+                                    {status != 0 &&(
+                                        <span className="text-center font-body-sm text-on-surface mt-2 block">Status: <span className={`font-semibold ${status === 2 ? "text-green-600" : status === 3 ? "text-red-600" : "text-amber-500"}`}>{statusText}</span></span>
                                     )}</>)}
                                     {currentUser?.role == "Employer "}
                                 </div>
@@ -119,13 +166,13 @@ function JobProfile({ jobs, currentUser, applytojob }){
                     <button className="w-13 py-4 px-6 border-2 border-primary-container text-primary-container font-label-md text-label-md uppercase tracking-widest rounded-lg hover:bg-primary-container/5 transition-all" onClick={() => navigate("/editjob", { state: {job: job} })}>Edit Job</button>
                 </div>
                     <div className="list">
-                    {job.applicants.length > 0?(job.applicants.map((appli, index) => (
-                        <div className="w-full flex items-center justify-between bg-surface-container-low border border-outline-variant/40 rounded-xl p-stack-md hover:bg-surface-container-high transition-all duration-200 cursor-pointer group shadow-sm" key={index} onClick={() => navigate(`/myprofile/${appli.id}`, {state:{viewingjobid: jobID}})}>
+                    {job.applicants.length > 0?(job.applicants.map((id, index) => (
+                        <div className="w-full flex items-center justify-between bg-surface-container-low border border-outline-variant/40 rounded-xl p-stack-md hover:bg-surface-container-high transition-all duration-200 cursor-pointer group shadow-sm" key={index} onClick={() => navigate(`/myprofile/${id}`, {state:{viewingjobid: jobID}})}>
                             <div className="flex items-center gap-stack-sm">
                                 <div className="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed-variant">
                                     <span className="material-symbols-outlined text-[20px]">person</span>
                                 </div>
-                                <h2 className="font-headline-sm text-on-surface group-hover:text-primary transition-colors">{appli.urname}</h2>
+                                <h2 className="font-headline-sm text-on-surface group-hover:text-primary transition-colors">{id}</h2>
                             </div>
                             <span className="material-symbols-outlined text-outline group-hover:translate-x-1 transition-transform">
                                 chevron_right
