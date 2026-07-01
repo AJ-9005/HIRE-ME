@@ -23,16 +23,16 @@ mongoose.connect(process.env.ATLAS_URI)
     .then(() => console.log("✅ Connected to MongoDB Atlas"))
     .catch(err => console.error("❌ MongoDB Connection Error:", err));
 
-const resumesDir = path.join(__dirname, 'resumes');
-if (!fs.existsSync(resumesDir)) fs.mkdirSync(resumesDir);
+// const resumesDir = path.join(__dirname, 'resumes');
+// if (!fs.existsSync(resumesDir)) fs.mkdirSync(resumesDir);
 
 app.use(express.static('public'));
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, 'resumes/'),
-    filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
-});
-const upload = multer({ storage: storage });
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => cb(null, 'resumes/'),
+//     filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
+// });
+// const upload = multer({ storage: storage });
 
 app.post('/api/getJobs', async (req, res) => {
     try {
@@ -70,7 +70,7 @@ app.post('/api/getJobs', async (req, res) => {
     }
 });
 
-app.post('/api/signup', resumeUpload.single('resume'), async (req, res) => {
+app.post('/api/signup', async (req, res) => {
     try {
         if (!req.body.userData) return res.status(400).json({ message: "No data received" });
         const userData = JSON.parse(req.body.userData);
@@ -224,7 +224,7 @@ app.post('/applytojob', isLoggedIn, async (req, res) => {
     }
 });
 
-app.put('/api/edit-user', isLoggedIn, resumeUpload.single('resume'), async (req, res) => {
+app.put('/api/edit-user', isLoggedIn, async (req, res) => {
     try{
         const updatedData = JSON.parse(req.body.userData)
         if(req.file){
