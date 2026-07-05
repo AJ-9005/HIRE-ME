@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 function SuggestLocation({ name, placeholder, value, onChange, classname, cityAutoComplete }){
     const [suggestions, setSuggestions] = useState([]);
