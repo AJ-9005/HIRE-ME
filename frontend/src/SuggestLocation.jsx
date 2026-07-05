@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
-function SuggestLocation({ name, placeholder, value, onChange, classname, cityAutoComplete }){
+function SuggestLocation({ name, placeholder, value, onChange, className, cityAutoComplete }){
     const [suggestions, setSuggestions] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
     const timer = useRef(null);
