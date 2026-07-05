@@ -1,6 +1,8 @@
 import { useState } from "react"
 import { useLocation } from "react-router-dom"
-function EditJob({ handleJobEdit }){
+import SuggestLocation from "./SuggestLocation"
+
+function EditJob({ handleJobEdit, cityAutoComplete }){
     const location = useLocation()
     const [job, setJob] = useState(location.state?.job)
     const [skillinp, setskillinp] = useState("")
@@ -54,7 +56,14 @@ function EditJob({ handleJobEdit }){
                             <label className="block font-label-md text-label-md text-on-surface-variant" htmlFor="location">Location (City, Country)</label>
                             <div className="relative">
                                 <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]" data-icon="location_on">location_on</span>
-                                <input className="w-full bg-surface border border-outline-variant rounded-lg pl-10 pr-4 py-3 font-body-md text-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface" type="text" name="location" onChange={handleChange} value={job.location} />
+                                <SuggestLocation 
+                                    name="location"
+                                    value={job?.location}
+                                    onChange={handleChange}
+                                    cityAutoComplete={cityAutoComplete}
+                                    placeholder="City, State"
+                                    className="w-full bg-surface border border-outline-variant rounded-lg pl-10 pr-4 py-3 font-body-md text-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface"
+                                />
                             </div>
                         </div>
                         <div className="space-y-stack-xs">

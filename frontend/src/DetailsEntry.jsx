@@ -1,12 +1,15 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
+import SuggestLocation from './SuggestLocation'
 
-function DetailsEntry({ addUser }){
+function DetailsEntry({ addUser, cityAutoComplete }){
+    const timer = useRef(null)
     const location = useLocation()
     const navigate = useNavigate()
     const basicInfo = location.state?.basicInfo
     const [skillinp, setskillinp] = useState("")
     const [allskills, setallskills] = useState([])
+    const [suggestions, setSuggestions] = useState([])
     const [companyDetails, setCompanyDetails] = useState({
         companyname: "",
         origin: "",
@@ -73,6 +76,7 @@ function DetailsEntry({ addUser }){
         setallskills(updatedSkills)
         setapplicantdetails({...applicantdetails, skillset: updatedSkills})
     }
+
     return(<div className="bg-background text-on-background min-h-screen flex flex-col">
         {basicInfo?.role == "Employer" && (
         <main className="flex-grow flex items-center justify-center py-stack-xl px-margin-mobile">
@@ -127,7 +131,14 @@ function DetailsEntry({ addUser }){
                                     <label className="font-label-md text-label-md text-on-surface uppercase tracking-wider" for="origin">Place of Origin Of the Organisation (City, Country)</label>
                                     <div className="relative">
                                         <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm" data-icon="location_on">location_on</span>
-                                        <input className="detail-input" id="origin" name="origin" onChange={handleChange} required />
+                                        <SuggestLocation 
+                                            name="location"
+                                            value={companyDetails?.origin}
+                                            onChange={handleChange}
+                                            cityAutoComplete={cityAutoComplete}
+                                            placeholder="City, State"
+                                            className="detail-input"
+                                        />
                                     </div>
                                 </div>
                                 <div className="flex flex-col gap-2">

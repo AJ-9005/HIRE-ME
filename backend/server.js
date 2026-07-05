@@ -4,7 +4,7 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { resumeUpload, avatarUpload } = require('./utils/multer')
+// const { resumeUpload, avatarUpload } = require('./utils/multer')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const isLoggedIn = require('./utils/isLoggedIn')
@@ -13,11 +13,12 @@ const cookieParser = require('cookie-parser')
 require('dotenv').config({ path: "./config/config.env" });
 const User = require('./models/user')
 const Job = require('./models/job');
+const City = require('./models/city')
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser())
-app.use(cors({origin: "http://localhost:5173", credentials: true}));
+app.use(cors({origin: ["http://localhost:5173", "https://hire-me-brown.vercel.app"], credentials: true}));
 
 mongoose.connect(process.env.ATLAS_URI)
     .then(() => console.log("✅ Connected to MongoDB Atlas"))
@@ -242,6 +243,7 @@ app.put('/api/edit-user', isLoggedIn, async (req, res) => {
     }
     catch(err){
         res.status(500).json({message: "Server error during update!"})
+        console.log(error)
     }
 })
 
@@ -313,6 +315,23 @@ app.post('/logout', isLoggedIn, (req, res) => {
     res.clearCookie('access', {httpOnly: true, sameSite: "lax"})
     res.clearCookie('refresh', {httpOnly: true, sameSite: "lax"})
     res.status(200).json({ message: "Logged out succesfully!" })
+})
+
+app.get('/api/cityAutoComplete', async (req, res) => {
+    try{
+        const entered = req.query.q
+        const cities = await City.find({
+            city: {
+                $regex: `^${entered}`,
+                $options: "i"
+            },
+        }, "city admin_name").limit(10)
+        res.status(200).json({ cities: cities})
+    }
+    catch(err){
+        res.status(500).json({ message: "Server down!" })
+        console.log(err)
+    }
 })
 
 module.exports = app

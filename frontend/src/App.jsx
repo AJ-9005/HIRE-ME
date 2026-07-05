@@ -191,6 +191,26 @@ function App() {
     }
   }
 
+  async function cityAutoComplete(queryString){
+    try{
+      const response = await fetch(`${API_URL}/api/cityAutoComplete?q=${queryString}`)
+      const data = await response.json()
+      if(response.ok){
+        return data.cities.map(
+          city => `${city.city}, ${city.admin_name}`
+        );
+      }
+      else{
+        alert(data.message)
+      }
+    }
+    catch(err){
+      alert("Some problem occured!")
+      console.error(err)
+      return []
+    }
+  }
+
   return (
     <>
       <Navbar isLoggedIn={isLoggedIn} currentUser={currentUser} />
@@ -200,11 +220,11 @@ function App() {
         <Route path="/jobs" element={<JobListings />} />
         <Route path="/myprofile/:id" element={<MyProfile users={users} logout={logout} loggeduser={currentUser} jobs={jobs}/>} />
         <Route path="/jobdetails/:jobID" element={<JobProfile jobs={jobs} currentUser={currentUser} />} />
-        <Route path="/detailsEntry" element={<DetailsEntry addUser={addUser} />} />
-        <Route path="/jobcreator" element={<JobCreator addJob={addJob} />} />
+        <Route path="/detailsEntry" element={<DetailsEntry addUser={addUser} cityAutoComplete={cityAutoComplete} />} />
+        <Route path="/jobcreator" element={<JobCreator cityAutoComplete={cityAutoComplete} addJob={addJob} cityAutoComplete={cityAutoComplete} />} />
         <Route path="/editprofile" element={< EditProfile currentUser={currentUser} />} />
-        <Route path="/editdetails" element={< EditDetails handleUserEdit={handleUserEdit} />} />
-        <Route path="/editjob" element={<EditJob handleJobEdit={handleJobEdit}/>} />
+        <Route path="/editdetails" element={< EditDetails cityAutoComplete={cityAutoComplete} handleUserEdit={handleUserEdit} cityAutoComplete={cityAutoComplete}/>} />
+        <Route path="/editjob" element={<EditJob handleJobEdit={handleJobEdit} cityAutoComplete={cityAutoComplete} />} />
         <Route path="/foryoupage" element={<ForYouPage/>} />
       </Routes>
     </>

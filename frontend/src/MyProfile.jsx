@@ -151,7 +151,7 @@ function MyProfile({ users, logout, loggeduser, updateSelection, jobs }){
                                                                 </div>
                                                             </div>
                                                         </td>
-                                                        <td class="px-stack-md py-stack-md font-body-sm text-body-sm text-on-surface-variant">{job?.postedOn ? job.postedOn : "N/A"}</td>
+                                                        <td class="px-stack-md py-stack-md font-body-sm text-body-sm text-on-surface-variant">{job?.postedOn ? new Date(job.postedOn).toLocaleDateString() : "N/A"}</td>
                                                         <td className="px-stack-md py-stack-md text-right">
                                                             <button className="px-stack-md py-stack-xs rounded-lg border border-secondary text-secondary font-label-md hover:bg-secondary hover:text-white transition-all active:scale-95" onClick={() => navigate(`/jobdetails/${job._id}`)}>
                                                                 View Details

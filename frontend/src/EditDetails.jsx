@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-function EditDetails({ handleUserEdit }){
+import SuggestLocation from './SuggestLocation'
+
+function EditDetails({ handleUserEdit, cityAutoComplete }){
     const location = useLocation()
     const [tempUser, setTempUser] = useState(location.state?.draftUser)
     const navigate = useNavigate()
@@ -66,7 +68,14 @@ function EditDetails({ handleUserEdit }){
                                 <label className="font-label-md text-label-md text-on-surface uppercase tracking-wider" htmlFor="origin">Place of Origin Of the Organisation (City, Country)</label>
                                 <div className="relative">
                                     <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm" data-icon="location_on">location_on</span>
-                                    <input className="detail-input w-full pl-10 pr-4 py-3 rounded-lg border border-outline-variant bg-surface-bright focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md text-on-surface" type="text" id="origin" name="origin" onChange={handleChange} value={tempUser.details.origin} required />
+                                    <SuggestLocation 
+                                        name="location"
+                                        value={tempUser.details.origin}
+                                        onChange={handleChange}
+                                        cityAutoComplete={cityAutoComplete}
+                                        placeholder="City, State"
+                                        className="detail-input w-full pl-10 pr-4 py-3 rounded-lg border border-outline-variant bg-surface-bright focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md text-on-surface"
+                                    />
                                 </div>
                             </div>
                             <div className="flex flex-col gap-2">

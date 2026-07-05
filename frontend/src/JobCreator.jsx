@@ -1,7 +1,8 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import SuggestLocation from "./SuggestLocation"
 
-function JobCreator({ addJob }){
+function JobCreator({ addJob, cityAutoComplete }){
     const navigate = useNavigate()
     const [skillinp, setskillinp] = useState("")
     const [allskills, setallskills] = useState([])
@@ -74,7 +75,14 @@ function JobCreator({ addJob }){
                                 <label className="block font-label-md text-label-md text-on-surface-variant" for="location">Location</label>
                                 <div className="relative">
                                     <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]" data-icon="location_on">location_on</span>
-                                    <input placeholder="City, Country" className="w-full bg-surface border border-outline-variant rounded-lg pl-10 pr-4 py-3 font-body-md text-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline/50" type="text" name="location" onChange={handleChange}/>
+                                    <SuggestLocation 
+                                        name="location"
+                                        value={jobdetails?.location}
+                                        onChange={handleChange}
+                                        cityAutoComplete={cityAutoComplete}
+                                        placeholder="City, State"
+                                        className="w-full bg-surface border border-outline-variant rounded-lg pl-10 pr-4 py-3 font-body-md text-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline/50"
+                                    />
                                 </div>
                             </div>
                             <div className="space-y-stack-xs">
