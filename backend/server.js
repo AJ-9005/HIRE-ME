@@ -243,7 +243,7 @@ app.put('/api/edit-user', isLoggedIn, async (req, res) => {
     }
     catch(err){
         res.status(500).json({message: "Server error during update!"})
-        console.log(error)
+        console.log(err)
     }
 })
 
