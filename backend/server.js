@@ -142,7 +142,7 @@ app.get('/myprofile', isLoggedIn, async(req, res) => {
         }
     }
     catch(err){
-        res.status(500).send({ message: err })
+        res.status(500).send({message: err})
         console.log(err)
     }
 })
