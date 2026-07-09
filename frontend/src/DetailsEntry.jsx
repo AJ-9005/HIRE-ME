@@ -23,6 +23,8 @@ function DetailsEntry({ addUser, cityAutoComplete }){
         expereince:"None",
         maritalstatus:"",
         resume: null,
+        degree: "",
+        score: null
     })
     function handleChange(e){
         const { name, value, type, files } = e.target
@@ -36,6 +38,9 @@ function DetailsEntry({ addUser, cityAutoComplete }){
             setapplicantdetails((prev) => ({
             ...prev, [name]: finalValue,
         }))
+        }
+        if(name == "qualification"){
+            setCollege(["Undergraduate", "Post-graduate", "PHD"].includes(value))
         }
     }
     function handleSubmit(e){
@@ -76,6 +81,8 @@ function DetailsEntry({ addUser, cityAutoComplete }){
         setallskills(updatedSkills)
         setapplicantdetails({...applicantdetails, skillset: updatedSkills})
     }
+
+    const[college, setCollege] = useState(false)
 
     return(<div className="bg-background text-on-background min-h-screen flex flex-col">
         {basicInfo?.role == "Employer" && (
@@ -134,7 +141,7 @@ function DetailsEntry({ addUser, cityAutoComplete }){
                                         <SuggestLocation 
                                             name="location"
                                             value={companyDetails?.origin}
-                                            onChange={handleChange}
+                                            handleChange={handleChange}
                                             cityAutoComplete={cityAutoComplete}
                                             placeholder="City, State"
                                             className="detail-input"
@@ -191,6 +198,28 @@ function DetailsEntry({ addUser, cityAutoComplete }){
                                 </div>
                             </div>
                             <div className="flex flex-col gap-2">
+                                {!college && applicantdetails.qualification != "" && (<>
+                                    <label className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" for="qualification">Stream</label>
+                                    <select name="degree" value={applicantdetails?.degree} onChange={handleChange} className="detail-input" type="text">
+                                        <option value="PCM">PCM</option>
+                                        <option value="PCB">PCB</option>
+                                        <option value="PCMB">PCMB</option>
+                                        <option value="Commerce">Commerce</option>
+                                        <option value="Commerce with Maths">Commerce with Maths</option>
+                                        <option value="Arts">Arts</option>
+                                    </select>
+                                    </>
+                                )}
+                                {college && (<>
+                                    <label className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" for="qualification">Course Name</label>
+                                    <input name="degree" value={applicantdetails?.degree} onChange={handleChange} className="detail-input" type="text" />
+                                </>)}
+                            </div>
+                            {college && (<div className="flex flex-col gap-2">
+                                <label className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" for="qualification">Enter your GPA (out of 5.0)</label>
+                                <input min="0" max="10" step="0.01" name="score" value={applicantdetails?.score} onChange={handleChange} className="detail-input" type="number" />
+                            </div>)}
+                            <div className="flex flex-col gap-2">
                                 <label className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" for="skillset">Skills</label>
                                 <div className="bg-surface-container-low border border-outline-variant rounded-lg p-3 min-h-[100px] flex flex-wrap gap-2 transition-all">
                                     {allskills.map((skill, index) => (
@@ -199,7 +228,7 @@ function DetailsEntry({ addUser, cityAutoComplete }){
                                             <i onClick={() => removeSkill(index)}>&times;</i>
                                         </div>
                                     ))}
-                                    <input placeholder="press , to add skills" className="detail-input pl-2 bg-white" type="text" id="origin" name="skillset" onChange={(e) => setskillinp(e.target.value)} onKeyDown={setskills} value={skillinp} /><br />
+                                    <input placeholder="Press , to add skills" className="detail-input pl-2 bg-white" type="text" id="origin" name="skillset" onChange={(e) => setskillinp(e.target.value)} onKeyDown={setskills} value={skillinp} /><br />
                                 </div>
                             </div>
                             <div className="flex flex-col gap-2">

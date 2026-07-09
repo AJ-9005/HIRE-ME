@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
-function SuggestLocation({ name, placeholder, value, onChange, className, cityAutoComplete }){
+function SuggestLocation({ name, placeholder, value, handleChange, className, cityAutoComplete }){
     const [suggestions, setSuggestions] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
     const timer = useRef(null);
@@ -18,7 +18,8 @@ function SuggestLocation({ name, placeholder, value, onChange, className, cityAu
         }
         timer.current = setTimeout(async () => {
             const cities = await cityAutoComplete(value)
-            setSuggexstions(cities)
+            setSuggestions(cities)
+            setShowDropdown(true)
         }, 300)
     }
 
@@ -33,13 +34,14 @@ function SuggestLocation({ name, placeholder, value, onChange, className, cityAu
     }, []);
 
     const handleSelectSuggestion = (cityString) => {
-        onChange({ target: { name: name, value: cityString } });
+        handleChange({ target: { name: name, value: cityString } });
         setShowDropdown(false);
         setSuggestions([]);
     };
 
     return(
         <div className="relative w-full" ref={containerRef}>
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm" data-icon="location_on">location_on</span>
             <input 
                 type="text"
                 name={name}

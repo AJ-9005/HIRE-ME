@@ -2,6 +2,8 @@ import { useEffect, useState } from "react"
 import { useLocation, useParams } from "react-router-dom"
 import { useNavigate } from "react-router-dom"
 import { API_URL } from "./config/api"
+import profilePhoto from './assets/photo.jpeg'
+
 function MyProfile({ users, logout, loggeduser, updateSelection, jobs }){
     const { id } = useParams()
     const navigate = useNavigate()
@@ -174,7 +176,8 @@ function MyProfile({ users, logout, loggeduser, updateSelection, jobs }){
                 {currentUser?.role == "Candidate" && (<main className="flex-1 overflow-y-auto bg-background p-margin-desktop">
                     <div className="max-w-5xl mx-auto space-y-stack-xl">
                         <section className="userprofile">
-                            <div className="absolute top-0 left-0 w-2 h-full bg-secondary"></div>
+                            <div className="absolute top-0 left-0 w-2 h-full bg-secondary">
+                            </div>
                             <div className="flex flex-col md:flex-row gap-stack-lg">
                                 <div className="flex-1 space-y-stack-md">
                                     <div className="flex justify-between items-start">

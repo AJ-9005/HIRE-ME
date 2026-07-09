@@ -59,7 +59,7 @@ function EditJob({ handleJobEdit, cityAutoComplete }){
                                 <SuggestLocation 
                                     name="location"
                                     value={job?.location}
-                                    onChange={handleChange}
+                                    handleChange={handleChange}
                                     cityAutoComplete={cityAutoComplete}
                                     placeholder="City, State"
                                     className="w-full bg-surface border border-outline-variant rounded-lg pl-10 pr-4 py-3 font-body-md text-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface"

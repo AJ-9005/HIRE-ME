@@ -142,7 +142,7 @@ function App() {
   async function handleUserEdit(updatedUser, resumeFile){
     try{
       const formData = new FormData()
-      formData.append("userData", JSON.stringify(updatedUser))
+      formData.append('userData', JSON.stringify(updatedUser))
       if(resumeFile){
         formData.append("resume", resumeFile)
       }

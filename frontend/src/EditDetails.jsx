@@ -37,6 +37,7 @@ function EditDetails({ handleUserEdit, cityAutoComplete }){
         e.preventDefault()
         handleUserEdit(tempUser, newResume)
     }
+    const [college, setCollege] = useState(['Undergraduate', 'Post-graduate', 'PHD'].includes(tempUser?.details.qualification))
     return (
     <div className="bg-background text-on-background min-h-screen flex flex-col">
         {tempUser?.role == "Employer" && (
@@ -60,18 +61,17 @@ function EditDetails({ handleUserEdit, cityAutoComplete }){
                                     <label className="font-label-md text-label-md text-on-surface uppercase tracking-wider" htmlFor="established">Year Founded</label>
                                     <div className="relative">
                                         <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm" data-icon="calendar_today">calendar_today</span>
-                                        <input className="detail-input w-full pl-10 pr-4 py-3 rounded-lg border border-outline-variant bg-surface-bright focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md text-on-surface" type="number" min="1950" max={new Date().getFullYear()} id="established" name="established" onChange={handleChange} value={tempUser.details.established} required />
+                                        <input className="detail-input w-full pl-10 pr-4 py-3 rounded-lg border border-outline-variant bg-surface-bright focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md text-on-surface" type="Date" min="1950" max={new Date().getFullYear()} id="established" name="established" onChange={handleChange} value={tempUser.details.established} required />
                                     </div>
                                 </div>
                             </div>
                             <div className="flex flex-col gap-2">
                                 <label className="font-label-md text-label-md text-on-surface uppercase tracking-wider" htmlFor="origin">Place of Origin Of the Organisation (City, Country)</label>
                                 <div className="relative">
-                                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm" data-icon="location_on">location_on</span>
                                     <SuggestLocation 
-                                        name="location"
+                                        name="origin"
                                         value={tempUser.details.origin}
-                                        onChange={handleChange}
+                                        handleChange={handleChange}
                                         cityAutoComplete={cityAutoComplete}
                                         placeholder="City, State"
                                         className="detail-input w-full pl-10 pr-4 py-3 rounded-lg border border-outline-variant bg-surface-bright focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md text-on-surface"
@@ -126,6 +126,28 @@ function EditDetails({ handleUserEdit, cityAutoComplete }){
                                     </div>
                                 </div>
                             </div>
+                            <div className="flex flex-col gap-2">
+                                {!college && (<>
+                                    <label className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" for="qualification">Stream</label>
+                                    <select name="degree" value={tempUser?.details?.degree} onChange={handleChange} className="detail-input" type="text">
+                                        <option value="PCM">PCM</option>
+                                        <option value="PCB">PCB</option>
+                                        <option value="PCMB">PCMB</option>
+                                        <option value="Commerce">Commerce</option>
+                                        <option value="Commerce with Maths">Commerce with Maths</option>
+                                        <option value="Arts">Arts</option>
+                                    </select>
+                                    </>
+                                )}
+                                {college && (<>
+                                    <label className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" for="qualification">Course Name</label>
+                                    <input name="degree" value={tempUser?.details?.degree} onChange={handleChange} className="detail-input" type="text" />
+                                </>)}
+                            </div>
+                            {college && (<div className="flex flex-col gap-2">
+                                <label className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" for="qualification">Enter your GPA (out of 5.0)</label>
+                                <input min="0" max="10" step="0.01" name="score" value={tempUser?.details?.score} onChange={handleChange} className="detail-input" type="number" />
+                            </div>)}
                             <div className="flex flex-col gap-2">
                                 <label className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" htmlFor="skillset">Skills</label>
                                 <div className="bg-surface-container-low border border-outline-variant rounded-lg p-3 min-h-[100px] flex flex-wrap gap-2 transition-all">

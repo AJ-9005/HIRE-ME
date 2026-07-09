@@ -10,6 +10,7 @@ function LoginPage({ addUser, login }){
         role: "Candidate",
         username: "",
         password: "",
+        avatar: ""
     })
     const [passconfirm, setpassconfirm] = useState("");
     const handleChange = (e) => {

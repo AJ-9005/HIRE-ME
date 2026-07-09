@@ -1,16 +1,16 @@
+require('dotenv').config({ path: "./config/config.env" });
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-// const { resumeUpload, avatarUpload } = require('./utils/multer')
+const resumeUpload = require('./utils/multer')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const isLoggedIn = require('./utils/isLoggedIn')
 const cookieParser = require('cookie-parser')
 
-require('dotenv').config({ path: "./config/config.env" });
 const User = require('./models/user')
 const Job = require('./models/job');
 const City = require('./models/city')
@@ -71,7 +71,7 @@ app.post('/api/getJobs', async (req, res) => {
     }
 });
 
-app.post('/api/signup', async (req, res) => {
+app.post('/api/signup', resumeUpload.single('resume'), async (req, res) => {
     try {
         if (!req.body.userData) return res.status(400).json({ message: "No data received" });
         const userData = JSON.parse(req.body.userData);
@@ -79,7 +79,7 @@ app.post('/api/signup', async (req, res) => {
         if (req.file) {
             userData.details.resume = {
                 name: req.file.originalname,
-                url: `http://localhost:5000/resumes/${req.file.filename}`
+                url: req.file.path
             };
         }
 
@@ -225,13 +225,13 @@ app.post('/applytojob', isLoggedIn, async (req, res) => {
     }
 });
 
-app.put('/api/edit-user', isLoggedIn, async (req, res) => {
+app.put('/api/edit-user', isLoggedIn, resumeUpload.single('resume'), async (req, res) => {
     try{
         const updatedData = JSON.parse(req.body.userData)
         if(req.file){
             updatedData.details.resume = {
                 name: req.file.originalname,
-                url: `http://localhost:5000/resumes/${req.file.filename}`
+                url: req.file.path
             }
         }
         const user = await User.findOneAndUpdate(
