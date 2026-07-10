@@ -37,7 +37,7 @@ function HistoryJobCard({ job }) {
             <img alt={job.logoAlt} className="w-full h-full object-contain" src={job.logo} />
           </div> */}
           <div>
-            <h4 className="font-headline-md text-[20px] text-primary">₹{job.salary}/month</h4>
+            <h4 className="font-headline-md text-[20px] text-primary">{job.jobrole}</h4>
             <p className="text-label-bold text-on-surface-variant">
               {job.company} • {job.location}
             </p>
@@ -170,14 +170,14 @@ export default function ForYouPage() {
       </main>
 
       {/* Contextual FAB (hidden on scroll down, shown on up) */}
-      <button
+      {/* <button
         className="fixed bottom-8 right-8 kinetic-gradient text-white w-16 h-16 rounded-2xl flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all z-50"
         style={{
           transform: fabHidden ? "translateY(100px) scale(0)" : "translateY(0) scale(1)",
         }}
       >
         <span className="material-symbols-outlined text-[32px]">edit_note</span>
-      </button>
+      </button> */}
     </div>
   );
 }
