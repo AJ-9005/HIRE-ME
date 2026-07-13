@@ -2,7 +2,6 @@ import { useEffect, useState } from "react"
 import { useLocation, useParams } from "react-router-dom"
 import { useNavigate } from "react-router-dom"
 import { API_URL } from "./config/api"
-import profilePhoto from './assets/photo.jpeg'
 
 function MyProfile({ users, logout, loggeduser, updateSelection, jobs }){
     const { id } = useParams()
@@ -73,19 +72,19 @@ function MyProfile({ users, logout, loggeduser, updateSelection, jobs }){
         }
     return(
         <div className="bg-background text-on-background min-h-screen">
-            <div id="flex h-screen overflow-hidden">
+            <div className="flex h-screen overflow-hidden">
                 {currentUser?.role == "Employer" && (<>
                 <main className="flex-1 overflow-y-auto bg-background p-margin-desktop">
                     <div className="max-w-5xl mx-auto space-y-stack-xl">
                         <section className="userprofile">
                             <div className="absolute top-0 left-0 w-2 h-full bg-secondary"></div>
-                            <div className="flex flex-col md:flex-row gap-stack-lg">
-                                <div className="flex-1 space-y-stack-md">
-                                    <div className="flex justify-between items-start">
+                            {/* <div className="flex flex-col md:flex-row gap-stack-lg">
+                                <div className="flex-1 space-y-stack-md"> */}
+                                    <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-start border-b border-outline-variant pb-6">
                                         <div className="flex flex-col">
                                             <h1 className="font-display-lg text-display-lg text-primary">{currentUser?.urname}</h1>
                                         </div>
-                                        <div className="flex items-center gap-stack-sm">
+                                        <div className="flex flex-wrap items-center gap-2 sm:gap-stack-sm w-full lg:w-auto">
                                             {owner && (<>
                                                 <button className="bg-primary text-on-primary px-stack-md py-stack-xs rounded-lg font-label-md hover:opacity-90 transition-all flex items-center justify-center gap-stack-xs" onClick={() => navigate("/editprofile", {state: {editUser: currentUser}})}>
                                                     <span className="material-symbols-outlined text-[18px]">edit</span>
@@ -124,8 +123,8 @@ function MyProfile({ users, logout, loggeduser, updateSelection, jobs }){
                                             <p className="font-body-md text-on-surface font-medium">{currentUser.details.website?(<a href={`https://${currentUser.details.website}`} target="_blank" />):"Not Available"}</p>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
+                                {/* </div>
+                            </div> */}
                         </section>
                         {owner && (
                             <section className="space-y-stack-md">
@@ -173,18 +172,17 @@ function MyProfile({ users, logout, loggeduser, updateSelection, jobs }){
                     </div>
                 </main>
                 </>)}
-                {currentUser?.role == "Candidate" && (<main className="flex-1 overflow-y-auto bg-background p-margin-desktop">
-                    <div className="max-w-5xl mx-auto space-y-stack-xl">
+                {currentUser?.role == "Candidate" && (<main className="flex-1 overflow-y-auto bg-background p-4 sm:p-6 md:p-margin-desktop">
+                    <div className="max-w-5xl mx-auto space-y-8 md:space-y-stack-xl pb-12">
                         <section className="userprofile">
-                            <div className="absolute top-0 left-0 w-2 h-full bg-secondary">
-                            </div>
-                            <div className="flex flex-col md:flex-row gap-stack-lg">
-                                <div className="flex-1 space-y-stack-md">
-                                    <div className="flex justify-between items-start">
+                            <div className="absolute top-0 left-0 w-1.5 h-full bg-secondary"></div>
+                            {/* <div className="flex flex-col md:flex-row gap-stack-lg"> */}
+                                {/* <div className="flex-1 space-y-stack-md"> */}
+                                    <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-start border-b border-outline-variant pb-6">
                                         <div className="flex flex-col">
                                             <h1 className="font-display-lg text-display-lg text-primary">{currentUser?.urname}</h1>
                                         </div>
-                                        <div className="flex items-center gap-stack-sm">
+                                        <div className="flex flex-wrap items-center gap-2 sm:gap-stack-sm w-full lg:w-auto">
                                             <button className="border border-outline text-on-surface-variant px-stack-md py-stack-xs rounded-lg font-label-md hover:bg-surface-container transition-all flex items-center justify-center gap-stack-xs" onClick={() => {
                                                 if(currentUser?.details?.resume?.url){
                                                     window.open(currentUser.details.resume.url, "_blank")
@@ -242,8 +240,8 @@ function MyProfile({ users, logout, loggeduser, updateSelection, jobs }){
                                             ))}
                                         </div>
                                     </div>
-                                </div>
-                            </div>
+                                {/* </div> */}
+                            {/* </div> */}
                         </section>
                         {loggeduser?.role == "Employer" && !owner &&(
                             <div className="decision">

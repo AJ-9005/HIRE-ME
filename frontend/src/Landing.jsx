@@ -31,18 +31,13 @@ function Landing({ isLoggedIn, currentUser }) {
                                 <span className="text-on-primary-container italic font-extrabold">For the minds who create.</span>
                             </h1>
 
-                            <div className="flex flex-wrap gap-4 mb-16">
+                            <div className="flex flex-col sm:flex-row gap-4 mb-16 w-full max-w-md md:max-w-none">
                                 <button
-                                    className="btn px-8 py-4 bg-primary-container text-white font-label-bold text-label-bold rounded-lg shadow-lg flex items-center group"
-                                    onClick={() => handleClick("/jobs")}
-                                >
-                                    Get hired
-                                    <span className="material-symbols-outlined ml-2 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                    className="btn w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 bg-primary-container text-white font-label-bold text-label-bold rounded-lg shadow-lg flex items-center justify-center group" onClick={() => handleClick("/jobs")}>
+                                        Get hired
+                                        <span className="material-symbols-outlined ml-2 group-hover:translate-x-1 transition-transform">arrow_forward</span>
                                 </button>
-                                <button className="btn px-8 py-4 bg-surface-container border border-outline-variant text-primary font-label-bold text-label-bold rounded-lg"
-                                    onClick={() => handleClick(`/myprofile/${currentUser?.id}`)}>
-                                    Hire a candidate
-                                </button>
+                                <button className="btn w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 bg-surface-container border border-outline-variant text-primary font-label-bold text-label-bold rounded-lg text-center" onClick={() => handleClick(`/myprofile/${currentUser?.id}`)}>Hire a candidate</button>
                             </div>
                         </div>
 

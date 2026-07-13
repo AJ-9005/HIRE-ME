@@ -1,6 +1,8 @@
 import { useRef, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import SuggestLocation from './SuggestLocation'
+import officeImage from './assets/office.jpg'
+import buildingImage from './assets/officebuilding.jpg'
 
 function DetailsEntry({ addUser, cityAutoComplete }){
     const timer = useRef(null)
@@ -95,7 +97,7 @@ function DetailsEntry({ addUser, cityAutoComplete }){
                     </div>
                     <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-md">
                         <div className="absolute inset-0 bg-primary/10 flex items-center justify-center">
-                            <img className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjqVC8Y-XmMzpndgXWXMYSDOKn9lyZDnXnTw8QCYnm8cKBoHYlHR5KlbNQOE0YiN_4kgws2FpPt8SAi8HYRBFcLwql96QfbuMInFmA1rAwI-bL6gKjm6-8hwOakQkyh0EHYHyxa62KrYheYZklWbP2S1yUa4bem7c4_b62EctH70FVHk4UezyVGIl0GDh9TY9rRAED6dFVy2mjLF0r_nmPgYEXCAWESnhNZ34ChbCOG8rVwdGVX6BkKNZedcwGBMJkpCL2qeaPk3al" alt="" />
+                            <img className="w-full h-full object-cover" src={buildingImage} alt="" />
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-stack-md">
@@ -273,7 +275,7 @@ function DetailsEntry({ addUser, cityAutoComplete }){
                     </section>
                     <aside className="lg:col-span-4 flex flex-col gap-gutter">
                         <div className="relative rounded-xl overflow-hidden aspect-square lg:aspect-auto lg:h-[400px]">
-                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGmeldM4OVdgrOyxM3-Cz9ajsH_CJDCBECMf4F7QcB_C0Zxl0otPiig7gxJVP8Zk57jctNrY-heBvhhVyxg_xaR4AvGcaZNf4Fs2bxUPTq1sWYvDKeibErXg-w_vO-9J48kqoMbCFLwPNj-Gzxvnh8oLFdk_fOUoDobR6Qla3zpd3XdxW_uhsT4nw_vIgZBinzuSRbo9-9-k2FGaQMN6pfKQg7CSsZ0LJ-AVVSEKtWJH6fnGuaGuM-6-__KQN4J054n_L41bc2-zoH" src="w-full h-full object-cover" />
+                            <img src={officeImage} className="w-full h-full object-cover" />
                             <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent flex flex-col justify-end p-stack-md">
                                 <p className="text-on-primary font-body-lg italic">"A career is not just a job; it is a legacy in the making."</p>
                             </div>

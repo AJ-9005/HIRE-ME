@@ -61,9 +61,9 @@ function JobListings(){
     return(
         <div className="bg-background text-on-surface">
             <h1 className="heading pt-5">Job Listings</h1>
-            <main className="pt-3 pb-stack-xl px-margin-desktop max-w-container-max mx-auto grid grid-cols-12 gap-gutter">
-                <aside className="col-span-3 space-y-stack-md">
-                    <div className="bg-surface-container-low p-stack-md rounded-xl border border-outline-variant/30 sticky top-28">
+            <main className="pt-3 pb-stack-xl px-4 sm:px-6 md:px-margin-desktop max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-gutter">
+                <aside className="lg:col-span-3 space-y-stack-md">
+                    <div className="bg-surface-container-low p-5 md:p-stack-md rounded-xl border border-outline-variant/30 lg:sticky lg:top-28 shadow-2xs">
                         <div className="flex items-center justify-between mb-stack-md">
                             <h2 className="font-headline-sm text-headline-sm text-primary">Filters</h2>
                             <button className="text-label-sm font-label-sm text-secondary hover:underline">Clear All</button>
@@ -107,12 +107,12 @@ function JobListings(){
                         <button className="btn-apply" onClick={() => fetchJobs(1, filters, false)}>Apply filters</button>
                     </div>
                 </aside>
-                <section className="col-span-9 space-y-stack-md">
-                    <div className="bg-surface-container-lowest p-4 rounded-full shadow-md flex items-center gap-4 border border-outline-variant/50">
+                <section className="lg:col-span-9 space-y-6">
+                    <div className="bg-surface-container-lowest p-2 rounded-xl sm:rounded-full shadow-xs flex flex-col sm:flex-row items-center gap-2 border border-outline-variant/60">
                         <div className="flex-1 flex items-center gap-3 pl-4 border-r border-outline-variant">
                             <span className="material-symbols-outlined text-secondary">search</span>
-                            <input className="w-full bg-transparent border-none focus:ring-0 text-body-md placeholder:text-outline" type="text" name="search" placeholder="Search here" onChange={filterChange}/>
-                            <button className="btn-apply w-1/4" onClick={() => fetchJobs(1, filters, false)}>Search</button>
+                            <input className="w-full bg-transparent border-none focus:ring-0 text-body-md placeholder:text-outline" type="text" name="search" placeholder="Search here" autoComplete="off" onChange={filterChange}/>
+                            <button className="w-full sm:w-auto bg-primary text-on-primary font-bold px-6 py-2 rounded-lg sm:rounded-full whitespace-nowrap hover:opacity-95 transition-all" onClick={() => fetchJobs(1, filters, false)}>Search</button>
                         </div>
                     </div>
                     <div className="space-y-stack-sm">
@@ -139,7 +139,7 @@ function JobListings(){
                         )}
                     </div>
                     <div className="flex w-full justify-center">
-                        <button className="btn" onClick={() => setPage(prev => prev+1)}> + Load More</button>
+                        <button className="w-full sm:w-auto min-h-[48px] px-6 py-2.5 bg-transparent border-3 border-[rgb(105,53,3)] text-[rgb(105,53,3)] font-['Rockwell'] font-bold text-base sm:text-lg rounded-lg inline-flex items-center justify-center cursor-pointer transition-all duration-200 hover:bg-[rgb(105,53,3)] hover:text-white active:scale-97px-6 py-2.5 border border-outline text-primary font-label-bold rounded-lg hover:bg-surface-container transition-all active:scale-95 cursor-pointer flex items-center gap-2" onClick={() => setPage(prev => prev+1)}> + Load More</button>
                     </div>
                 </section>
             </main>

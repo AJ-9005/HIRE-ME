@@ -46,27 +46,6 @@ body{
   color: white;
   cursor: pointer;
 }
-.navbar{
-  z-index: 50;
-  position: sticky;
-  top: 0;
-  background-color: rgb(105, 53, 3);
-  color: white;
-  display: flex;
-  justify-content: space-around;
-  width: 100%;
-  height: 15vh;
-  left: 0;
-  align-items: center;
-  box-sizing: border-box;
-}
-.navbar p{
-  font: 20px "Rockwell";
-}
-.navbar p:hover{
-  text-decoration: underline;
-  cursor: pointer;
-}
 .center-items{
   display: flex;
   justify-content: center;
@@ -124,12 +103,6 @@ body{
 }
 .filter-group select{
   width: 100%;
-}
-.filter-input {
-  border: 1.5px solid #e2e8f0;
-  border-radius: 6px;
-  padding: 8px;
-  outline-color: rgb(105, 53, 3);
 }
 .list {
   flex-grow: 1;
@@ -357,6 +330,10 @@ body{
 }
 
 @layer components {
+  .navbar{
+    @apply sticky top-0 left-0 z-50 flex flex-col sm:flex-row items-center justify-between sm:justify-around w-full min-h-[72px] md:h-20 bg-[rgb(105,53,3)]
+           text-white px-6 py-4 sm:py-0 box-border shadow-md
+  }
   .form-label {
     @apply text-label-sm text-on-surface-variant uppercase ml-1 block mb-2;
   }
@@ -401,6 +378,10 @@ body{
   .btn-apply-disabled {
     @apply bg-surface-dim text-on-surface-variant opacity-60 shadow-none 
            scale-100 cursor-not-allowed pointer-events-none;
+  }
+  .filter-input{
+    @apply w-full bg-surface-container-lowest border border-outline-variant rounded-lg p-2.5 text-body-md text-on-surface outline-none focus:ring-1 focus:ring-primary
+           focus:border-primary
   }
   .glass-card {
     background: rgba(255, 255, 255, 0.7);
